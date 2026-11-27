@@ -25,9 +25,12 @@
   <script>
     async function openAgent() {
       const r = await fetch('/api/v1/local-agent/start', {method: 'POST'});
-      const v = await r.json();
-      if (v.url) window.location.href = v.url;
-      else alert(JSON.stringify(v));
+      if (!r.ok) {
+        alert(await r.text());
+        return;
+      }
+      // Always use the Inspector pairing route, never the raw OpenCode port.
+      window.location.href = '/agent';
     }
     async function loadTerminals() {
       const r = await fetch('/api/v1/tools/terminal-list');

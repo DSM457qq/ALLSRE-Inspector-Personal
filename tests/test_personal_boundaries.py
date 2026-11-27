@@ -26,3 +26,9 @@ def test_plugin_has_no_asset_or_sftp_tools():
         assert name not in source
     for name in ("bash", "sqlbash", "list_terminals", "save_task_file"):
         assert f'name: "{name}"' in source
+
+
+def test_console_agent_button_uses_pairing_route():
+    source = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+    assert "window.location.href = '/agent'" in source
+    assert "window.location.href = v.url" not in source
