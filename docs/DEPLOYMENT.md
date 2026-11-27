@@ -47,15 +47,15 @@ Inspector Personal  127.0.0.1:8876
 
 ## 3. 前置条件
 
-| 组件 | 要求 |
-|---|---|
-| 操作系统 | Windows 10/11 x64；SecureCRT Bridge 依赖 Windows SecureCRT |
-| Python | 3.11 或更高 |
-| Node.js | 22 LTS 或 24，需包含 npm |
-| Git | 任意近期版本 |
-| SecureCRT | 已能正常打开目标 SSH/数据库会话 |
-| OpenCode | 2.x；仓库固定依赖 `@opencode/cli 2.3.2` |
-| 网络 | 能访问模型 `baseUrl`；不需要 ConfigCenter |
+| 组件      | 要求                                                       |
+| --------- | ---------------------------------------------------------- |
+| 操作系统  | Windows 10/11 x64；SecureCRT Bridge 依赖 Windows SecureCRT |
+| Python    | 3.11 或更高                                                |
+| Node.js   | 22 LTS 或 24，需包含 npm                                   |
+| Git       | 任意近期版本                                               |
+| SecureCRT | 已能正常打开目标 SSH/数据库会话                            |
+| OpenCode  | 2.x；仓库固定依赖 `@opencode/cli 2.3.2`                  |
+| 网络      | 能访问模型 `baseUrl`；不需要 ConfigCenter                |
 
 检查命令：
 
@@ -157,22 +157,22 @@ opencode:
 
 ### 5.3 字段说明
 
-| 字段 | 说明 |
-|---|---|
-| `listen_host` | 只能是 `127.0.0.1`、`localhost` 或 `::1` |
-| `listen_port` | Inspector HTTP 端口，默认 8876 |
-| `data_dir` | 审计库、OpenCode 运行时配置、Bridge 数据 |
-| `file_storage_dir` | `save_task_file` 的根目录；默认桌面 `ALLSRE-files` |
-| `securecrt_bridge.enabled` | 是否启动本机 Bridge |
-| `securecrt_bridge.port` | Bridge 端口，默认 8765 |
-| `shell_keepalive_enabled` | 空闲 Shell 保活；示例默认开启 |
-| `shell_keepalive_interval_seconds` | 保活间隔，代码下限 30 秒 |
-| `opencode.executable` | `auto` 或 OpenCode 绝对路径 |
-| `opencode.api_version` | 必须为 `"2"` |
-| `opencode.agent` | 必须是 `opencode.json` 中存在的 agent |
-| `opencode.model` | `providerId/modelId` |
-| `opencode.model_config` | OpenAI-compatible 端点配置 |
-| `opencode.model_thinking` | 是否启用模型 thinking |
+| 字段                                 | 说明                                                   |
+| ------------------------------------ | ------------------------------------------------------ |
+| `listen_host`                      | 只能是 `127.0.0.1`、`localhost` 或 `::1`         |
+| `listen_port`                      | Inspector HTTP 端口，默认 8876                         |
+| `data_dir`                         | 审计库、OpenCode 运行时配置、Bridge 数据               |
+| `file_storage_dir`                 | `save_task_file` 的根目录；默认桌面 `ALLSRE-files` |
+| `securecrt_bridge.enabled`         | 是否启动本机 Bridge                                    |
+| `securecrt_bridge.port`            | Bridge 端口，默认 8765                                 |
+| `shell_keepalive_enabled`          | 空闲 Shell 保活；示例默认开启                          |
+| `shell_keepalive_interval_seconds` | 保活间隔，代码下限 30 秒                               |
+| `opencode.executable`              | `auto` 或 OpenCode 绝对路径                          |
+| `opencode.api_version`             | 必须为 `"2"`                                         |
+| `opencode.agent`                   | 必须是 `opencode.json` 中存在的 agent                |
+| `opencode.model`                   | `providerId/modelId`                                 |
+| `opencode.model_config`            | OpenAI-compatible 端点配置                             |
+| `opencode.model_thinking`          | 是否启用模型 thinking                                  |
 
 ### 5.3.1 文件保存路径
 
@@ -289,10 +289,10 @@ http://127.0.0.1:8876/api/v1/tools/terminal-list
 
 ### 7.2 两层保活
 
-| 机制 | 默认 | 作用 |
-|---|---|---|
-| 标签页注册心跳 | 始终开启，每 2 秒 | 让 Inspector 发现 SecureCRT 标签页 |
-| Shell 空闲保活 | 默认关闭；示例开启 90 秒 | 防止 SSH/堡垒机因无输入断开 |
+| 机制           | 默认                     | 作用                               |
+| -------------- | ------------------------ | ---------------------------------- |
+| 标签页注册心跳 | 始终开启，每 2 秒        | 让 Inspector 发现 SecureCRT 标签页 |
+| Shell 空闲保活 | 默认关闭；示例开启 90 秒 | 防止 SSH/堡垒机因无输入断开        |
 
 ### 7.3 没有终端时检查
 
@@ -404,13 +404,13 @@ GET /api/v1/local/audits
 
 ## 10. 日志和数据
 
-| 路径 | 内容 |
-|---|---|
-| `data\personal.sqlite3` | 命令审计 |
-| `data\opencode-personal.runtime.json` | 生成的 OpenCode 配置 |
-| `data\opencode-personal.log` | OpenCode 日志 |
-| `data\securecrt-bridge\` | Bridge token、IPC、客户端脚本 |
-| `data\files\` | `save_task_file` 文件 |
+| 路径                                    | 内容                          |
+| --------------------------------------- | ----------------------------- |
+| `data\personal.sqlite3`               | 命令审计                      |
+| `data\opencode-personal.runtime.json` | 生成的 OpenCode 配置          |
+| `data\opencode-personal.log`          | OpenCode 日志                 |
+| `data\securecrt-bridge\`              | Bridge token、IPC、客户端脚本 |
+| `data\files\`                         | `save_task_file` 文件       |
 
 查看进程和端口：
 
@@ -563,14 +563,14 @@ http://127.0.0.1:8876/agent
 
 ## 16. 与生产 Inspector 共存
 
-| 项目 | 个人版 | 生产版 |
-|---|---|---|
-| 用途 | 本机 SecureCRT | ConfigCenter Worker |
-| HTTP 端口 | 8876 | 通常 8876，可改 |
-| Bridge 端口 | 8765 或 8766 | 8765 |
-| 数据目录 | `data/` | Worker 数据目录 |
-| ConfigCenter | 无 | 有 |
-| 浏览器自动化 | 无 | 有 |
+| 项目         | 个人版         | 生产版              |
+| ------------ | -------------- | ------------------- |
+| 用途         | 本机 SecureCRT | ConfigCenter Worker |
+| HTTP 端口    | 8876           | 通常 8876，可改     |
+| Bridge 端口  | 8765 或 8766   | 8765                |
+| 数据目录     | `data/`      | Worker 数据目录     |
+| ConfigCenter | 无             | 有                  |
+| 浏览器自动化 | 无             | 有                  |
 
 共存要求：
 
