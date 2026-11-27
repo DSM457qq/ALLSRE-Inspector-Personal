@@ -181,7 +181,15 @@ def _journalctl_read_only(args: list[str]) -> bool:
 
 def _systemctl_read_only(args: list[str]) -> bool:
     action = next((item for item in args if not item.startswith("-")), "")
-    return action in _SYSTEMCTL_READ_ONLY
+    if action:
+        return action in _SYSTEMCTL_READ_ONLY
+    # ``systemctl --failed`` (and ``--state=failed``) is shorthand for
+    # ``list-units --failed`` and has no mutating verb.  Without this branch
+    # an option-only invocation is conservatively classified MUTATING, which
+    # makes the Agent ask for approval on a read-only inspection command.
+    if any(item in {"--failed", "--state=failed"} for item in args):
+        return True
+    return False
 
 
 def _tail_read_only(args: list[str]) -> bool:
