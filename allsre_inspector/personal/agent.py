@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from threading import Lock
 from typing import Any
+import base64
 import json
 import os
 import secrets
@@ -76,6 +77,13 @@ class LocalAgentRuntime:
             if self._api.v2:
                 base.pop("provider", None)
                 base["providers"] = {provider_id: provider}
+                # V2's supported model filter is the provider.use policy.
+                # Built-in free catalog providers are denied, while the one
+                # configured provider is selectable.
+                base["policies"] = [
+                    {"action": "provider.use", "resource": "*", "effect": "deny"},
+                    {"action": "provider.use", "resource": provider_id, "effect": "allow"},
+                ]
             else:
                 base.setdefault("provider", {})[provider_id] = {
                     "npm": "@ai-sdk/openai-compatible",
@@ -122,6 +130,10 @@ class LocalAgentRuntime:
             env = os.environ.copy()
             env["ALLSRE_INSPECTOR_API_BASE"] = f"http://127.0.0.1:{self.settings.port}"
             env["ALLSRE_INSPECTOR_TOOL_TOKEN"] = self.service_token
+            # Keep OpenCode's free catalog out of the model picker.  The
+            # configured provider is the only one exposed by the generated
+            # provider.use policy as well.
+            env["OPENCODE_DISABLE_FREE_MODELS"] = "1"
             env["ALLSRE_PERSONAL_MODEL_API_KEY"] = str(
                 (self.settings.opencode.get("model_config") or {}).get("apiKey") or ""
             )
@@ -154,6 +166,65 @@ class LocalAgentRuntime:
         request = urllib.request.Request(url, method=method, headers=self._api.headers())
         with urllib.request.urlopen(request, timeout=timeout) as response:
             return json.loads(response.read().decode("utf-8") or "{}")
+
+    def recent_session_url(self) -> str:
+        """Return the OpenCode URL for the most recently updated session."""
+        if not self.running or not self.port:
+            raise RuntimeError("local_agent_not_running")
+        value = self._request("GET", "/session", timeout=5)
+        items = value.get("data") if isinstance(value, dict) else value
+        if not isinstance(items, list):
+            items = []
+        sessions = [item for item in items if isinstance(item, dict) and str(item.get("id") or "").startswith("ses_")]
+        if not sessions:
+            return self.url
+        def stamp(item: dict[str, Any]) -> float:
+            time_value = item.get("time") if isinstance(item.get("time"), dict) else {}
+            for candidate in (item.get("updatedAt"), item.get("createdAt"),
+                              time_value.get("updated"), time_value.get("created")):
+                try:
+                    return float(candidate)
+                except (TypeError, ValueError):
+                    continue
+            return 0.0
+        session = max(sessions, key=stamp)
+        session_id = str(session.get("id"))
+        # OpenCode V2 browser route is /server/<base64url(server-origin)>/session/<id>.
+        server = f"http://127.0.0.1:{self.port}"
+        encoded = base64.urlsafe_b64encode(server.encode("utf-8")).decode("ascii").rstrip("=")
+        return f"{server}/server/{encoded}/session/{session_id}"
+
+    def pair_cookie(self) -> tuple[str, str]:
+        """Redeem a pairing code server-side and return (target, Set-Cookie).
+
+        The browser cannot set a second-origin cookie from an iframe reliably
+        (SameSite/third-party cookie policy).  Inspector runs on the same host,
+        so it can redeem the one-time code itself and hand the resulting
+        OpenCode session cookie to the browser in the redirect response.
+        """
+        if not self.running or not self.port:
+            raise RuntimeError("local_agent_not_running")
+        pair = self._request("POST", "/api/pair", timeout=5)
+        code = str(pair.get("code") or "")
+        if not code:
+            raise RuntimeError("local_agent_pair_failed")
+        import http.client
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=5)
+        try:
+            connection.request(
+                "GET",
+                "/auth/connect/" + urllib.parse.quote(code, safe=""),
+                headers={"Accept": "text/html"},
+            )
+            response = connection.getresponse()
+            response.read()
+            cookies = [value for key, value in response.getheaders()
+                       if key.lower() == "set-cookie"]
+        finally:
+            connection.close()
+        if not cookies:
+            raise RuntimeError("local_agent_pair_cookie_missing")
+        return self.recent_session_url(), cookies[0]
 
     def pair_url(self) -> str:
         """Create a one-time browser pairing link for this server.

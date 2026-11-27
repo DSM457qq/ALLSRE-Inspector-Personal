@@ -39,6 +39,10 @@ def test_generated_agent_config_uses_v2_permissions_and_disables_thinking(tmp_pa
     assert {"bash", "bash_readonly", "sqlbash", "list_terminals", "save_task_file"} <= {
         rule["action"] for rule in config["permissions"]
     }
+    assert config["policies"] == [
+        {"action": "provider.use", "resource": "*", "effect": "deny"},
+        {"action": "provider.use", "resource": "custom", "effect": "allow"},
+    ]
     provider = config["providers"]["custom"]
     assert provider["models"]["model"]["settings"]["thinking"] == {"type": "disabled"}
 
@@ -48,3 +52,19 @@ def test_model_thinking_can_be_enabled(tmp_path):
     config = json.loads(path.read_text(encoding="utf-8"))
     provider = config["providers"]["custom"]
     assert provider["models"]["model"]["settings"]["thinking"] == {"type": "enabled"}
+
+
+def test_recent_session_url_uses_server_route(tmp_path):
+    result = runtime(tmp_path)
+    result.port = 65126
+    result.url = "http://127.0.0.1:65126"
+    result.process = type("Process", (), {"poll": lambda self: None})()
+    result._request = lambda method, path, timeout=5: {
+        "data": [
+            {"id": "ses_old", "time": {"updated": 1}},
+            {"id": "ses_new", "time": {"updated": 2}},
+        ]
+    }
+    url = result.recent_session_url()
+    assert url.startswith("http://127.0.0.1:65126/server/")
+    assert url.endswith("/session/ses_new")

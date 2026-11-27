@@ -149,16 +149,19 @@ def create_app(settings: PersonalSettings) -> FastAPI:
         try:
             if not state.agent.running:
                 state.agent.start()
-        except Exception as exc:
-            raise HTTPException(status_code=503, detail={
-                "code": "LOCAL_AGENT_START_FAILED", "message": str(exc)[:300],
-            }) from exc
-        try:
-            return RedirectResponse(state.agent.pair_url(), status_code=307)
+            target, cookie = state.agent.pair_cookie()
         except Exception as exc:
             raise HTTPException(status_code=503, detail={
                 "code": "LOCAL_AGENT_PAIR_FAILED", "message": str(exc)[:300],
             }) from exc
+        # Redeem the one-time code on the Inspector side and forward its
+        # OpenCode session cookie.  Cookies are host-scoped, not port-scoped,
+        # so the browser can then authenticate to the OpenCode server and land
+        # directly on the newest session instead of its history page.
+        return RedirectResponse(target, status_code=307, headers={
+            "set-cookie": cookie,
+            "cache-control": "no-store",
+        })
 
     @app.get("/")
     def home():
