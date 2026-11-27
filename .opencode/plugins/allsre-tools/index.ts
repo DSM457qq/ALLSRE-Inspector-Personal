@@ -70,11 +70,19 @@ export default Plugin.define({
       });
       editor.add({
         name: "sqlbash",
-        description: "在 SQL> 提示符下原样发送 SQL。不要用于普通 Shell 命令，也不要启动/退出数据库客户端。",
+        description: "在 SQL>、mysql> 等数据库提示符下原样发送一条短 SQL。不要用于普通 Shell 命令，也不要启动/退出数据库客户端；不要用 GROUP_CONCAT/UNION ALL 拼接大量表。",
         input: terminalInput,
         options: { permission: "sqlbash" },
         async execute(input, context) {
           const args = input as { command: string; timeout?: number; terminalId?: string };
+          const maxSqlChars = Number(process.env.ALLSRE_SQLBASH_MAX_CHARS || 2000);
+          if (args.command.length > maxSqlChars) {
+            throw new Error(
+              `SQL_COMMAND_TOO_LONG: ${args.command.length} characters; ` +
+              `limit ${maxSqlChars}. Split into one statement per call, ` +
+              `query metadata first, then scan table by table.`,
+            );
+          }
           await ctx.permission.assert({ sessionID: context.sessionID as any, action: "sqlbash", resources: [args.command] });
           return inspectorRequest("/api/v1/tools/bash", context, {
             command: args.command,

@@ -22,3 +22,5 @@
 6. 只读命令直接执行；修改命令会进入审批。不要用 `sh -c`、`bash -c`、`xargs` 或命令拼接绕过。
 7. 一次只执行一条最小命令，只依据真实输出回答。
 8. 不泄露凭据、Token 或敏感信息。
+9. `sqlbash` 一次只发送一条 SQL；不要用 `GROUP_CONCAT`/`UNION ALL` 在单条命令里拼接跨大量表的动态 SQL。单条 SQL 尽量控制在 1000 字符以内；超过 2000 字符会被工具拒绝。扫描多表时先查 `information_schema`，再分表、分批执行。
+10. 不要给 `sqlbash` 添加 `export`、Shell 变量、分号拼接等 Shell 前缀；`sqlbash` 只发送 SQL 本身。
