@@ -59,6 +59,19 @@ GET /api/v1/tools/terminal-list
 
 返回当前可用的 `terminalId`。OpenCode 插件会通过该列表选择终端。
 
+SecureCRT 有两层保活：
+
+1. 标签页脚本每 2 秒写一次注册心跳，始终开启，用于 Inspector 发现标签页；
+2. 空闲 Shell 保活默认关闭，可通过配置开启：
+
+```yaml
+securecrt_bridge:
+  shell_keepalive_enabled: true
+  shell_keepalive_interval_seconds: 90
+```
+
+空闲保活会在终端空闲一段时间后发送无害的 `:`，避免 SSH/堡垒机会话因无输入断开。
+
 ## 从生产 Inspector 配置迁移
 
 个人版只保留通用 OpenCode 和 SecureCRT 配置：

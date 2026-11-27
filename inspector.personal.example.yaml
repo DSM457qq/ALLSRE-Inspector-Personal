@@ -8,6 +8,10 @@ securecrt_bridge:
   enabled: true
   host: 127.0.0.1
   port: 8765
+  # Idle Shell keepalive (sends a harmless no-op through the existing tab).
+  # The tab script's 2-second registration heartbeat is separate and always on.
+  shell_keepalive_enabled: true
+  shell_keepalive_interval_seconds: 90
 
 opencode:
   executable: auto
