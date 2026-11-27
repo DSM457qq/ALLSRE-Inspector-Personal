@@ -8,6 +8,30 @@ import os
 import yaml
 
 
+DEFAULT_FILE_STORAGE_NAME = "ALLSRE-files"
+
+
+def _desktop_dir() -> Path:
+    """Return the Windows desktop directory, including redirected desktops."""
+    if os.name == "nt":
+        try:
+            import ctypes
+
+            buffer = ctypes.create_unicode_buffer(32768)
+            # CSIDL_DESKTOPDIRECTORY, not CSIDL_DESKTOP: the physical folder.
+            if ctypes.windll.shell32.SHGetFolderPathW(
+                None, 0x0010, None, 0, buffer
+            ) == 0 and buffer.value:
+                return Path(buffer.value)
+        except Exception:
+            pass
+    return Path.home() / "Desktop"
+
+
+def default_file_storage_dir() -> Path:
+    return _desktop_dir() / DEFAULT_FILE_STORAGE_NAME
+
+
 @dataclass(frozen=True)
 class PersonalSettings:
     raw: dict[str, Any]
@@ -28,7 +52,10 @@ class PersonalSettings:
 
     @property
     def file_storage_dir(self) -> Path:
-        value = Path(str(self.raw.get("file_storage_dir") or "./data/files"))
+        configured = str(self.raw.get("file_storage_dir") or "").strip()
+        if not configured:
+            return default_file_storage_dir()
+        value = Path(configured).expanduser()
         return value if value.is_absolute() else (self.source.parent / value).resolve()
 
     @property

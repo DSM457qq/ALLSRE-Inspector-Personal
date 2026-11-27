@@ -1,6 +1,6 @@
 # ALLSRE Inspector Personal
 
-个人电脑使用的轻量 Inspector：
+个人电脑使用的轻量 Inspector；报告默认保存到桌面 `ALLSRE-files`：
 
 - SecureCRT 终端绑定；
 - OpenCode V2 本地 Agent；

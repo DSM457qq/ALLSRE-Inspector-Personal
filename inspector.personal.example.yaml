@@ -1,7 +1,8 @@
 listen_host: 127.0.0.1
 listen_port: 8876
 data_dir: data
-file_storage_dir: ./data/files
+# Defaults to Desktop\ALLSRE-files. Override only if needed:
+# file_storage_dir: C:\Users\<user>\Desktop\ALLSRE-files
 
 # SecureCRT Bridge: Inspector owns the local bridge and SecureCRT tab script.
 securecrt_bridge:

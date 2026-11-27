@@ -3,6 +3,7 @@ from pathlib import Path
 
 from allsre_inspector.core.opencode_compat import OpenCodeApi
 from allsre_inspector.personal.agent import LocalAgentRuntime
+from allsre_inspector.personal import config as config_module
 from allsre_inspector.personal.config import PersonalSettings
 
 
@@ -68,3 +69,17 @@ def test_recent_session_url_uses_server_route(tmp_path):
     url = result.recent_session_url()
     assert url.startswith("http://127.0.0.1:65126/server/")
     assert url.endswith("/session/ses_new")
+
+
+def test_save_task_file_defaults_to_desktop_allsre_files(tmp_path, monkeypatch):
+    desktop = tmp_path / "Desktop"
+    monkeypatch.setattr(config_module, "_desktop_dir", lambda: desktop)
+    settings = PersonalSettings({}, tmp_path / "inspector.yaml")
+    assert settings.file_storage_dir == desktop / "ALLSRE-files"
+
+
+def test_explicit_file_storage_dir_wins(tmp_path, monkeypatch):
+    monkeypatch.setattr(config_module, "_desktop_dir", lambda: tmp_path / "Desktop")
+    custom = tmp_path / "custom-files"
+    settings = PersonalSettings({"file_storage_dir": str(custom)}, tmp_path / "inspector.yaml")
+    assert settings.file_storage_dir == custom
