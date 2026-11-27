@@ -24,6 +24,14 @@ POLL_SECONDS = 0.1
 HEARTBEAT_SECONDS = 2
 MAX_COMMAND_BYTES = 32768
 MAX_RESULT_BYTES = 1024 * 1024
+# Prompt sentinels used by the raw-input SQL path.  Keep MySQL/MariaDB here:
+# Oracle-style ``SQL>`` alone makes an otherwise successful mysql query wait
+# until timeout because its next prompt is never recognized.
+SQL_PROMPTS = (
+    "SQL> ", "SQL>", "mysql> ", "mysql>",
+    "MariaDB [", "mariadb> ", "mariadb>",
+    "# ", "$ ",
+)
 ORIGINAL_KEYMAP_NAME = ""
 ORIGINAL_KEYMAP_FILE = ""
 INPUT_LOCKED = False
@@ -326,7 +334,7 @@ def execute_sql(request, timeout):
     command = request.get("command") or ""
     if not command or "\x00" in command:
         return response(request, False, code="COMMAND_INVALID", message="empty command or NUL", started=started)
-    prompts = ["SQL> ", "SQL>", "# ", "$ "]
+    prompts = SQL_PROMPTS
     deadline = time.time() + timeout
     try:
         screen.Synchronous = True

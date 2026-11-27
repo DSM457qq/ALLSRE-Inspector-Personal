@@ -6,13 +6,13 @@
 
 - `list_terminals`：列出当前已打开的 SecureCRT 终端。返回 `terminalId`、`name`、`ip`。
 - `bash`：在 Shell 提示符下执行普通 Shell 命令。
-- `sqlbash`：在 SQL> 等数据库提示符下原样发送 SQL，不添加 Shell 包装。
+- `sqlbash`：在 SQL>、mysql>、MariaDB 等数据库提示符下原样发送 SQL，不添加 Shell 包装。
 - `save_task_file`：将报告保存到本机 `file_storage_dir` 目录（默认桌面 `ALLSRE-files`）。
 
 ## 规则
 
 1. 执行远端命令前先调用 `list_terminals`，并传入明确的 `terminalId`。
-2. 当前是 Shell 时用 `bash`；当前是 SQL> 时用 `sqlbash`。不要混用。
+2. 当前是 Shell 时用 `bash`；当前是 SQL>、mysql> 等数据库提示符时用 `sqlbash`。不要混用。
 3. 不要自行输入 `disql`、`exit`、`quit` 或快捷键切换数据库身份；需要时请操作员手工进入/退出。
 4. 禁止分页器和持续输出：
    - `systemctl`、`journalctl`、`git log` 加 `--no-pager`；
