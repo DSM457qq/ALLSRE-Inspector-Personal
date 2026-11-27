@@ -45,6 +45,12 @@ class LocalAgentRuntime:
         base = json.loads((self.project_root / "opencode.json").read_text(encoding="utf-8"))
         opencode = self.settings.opencode
         model_config = dict(opencode.get("model_config") or {})
+        thinking = {
+            "type": "enabled" if bool(opencode.get("model_thinking", False)) else "disabled",
+        }
+        agent = str(opencode.get("agent") or "inspector")
+        if agent in dict(base.get("agents") or {}):
+            base["default_agent"] = agent
         if model_config.get("baseUrl") and model_config.get("modelId"):
             provider_id = str(model_config.get("providerId") or "custom")
             model_id = str(model_config["modelId"])
@@ -62,7 +68,7 @@ class LocalAgentRuntime:
                         "capabilities": {
                             "tools": True, "input": ["text", "image"], "output": ["text"],
                         },
-                        "settings": {"thinking": {"type": "disabled"}},
+                        "settings": {"thinking": thinking},
                     }
                 },
             }
@@ -74,7 +80,7 @@ class LocalAgentRuntime:
                     "npm": "@ai-sdk/openai-compatible",
                     "name": provider_id,
                     "options": provider["settings"],
-                    "models": {model_id: {"name": model_id, "options": {"thinking": {"type": "disabled"}}}},
+                    "models": {model_id: {"name": model_id, "options": {"thinking": thinking}}},
                 }
         plugin = (self.project_root / ".opencode" / "plugins" / "allsre-tools").resolve()
         skills = (self.project_root / ".opencode" / "skills").resolve()

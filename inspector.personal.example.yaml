@@ -11,11 +11,15 @@ securecrt_bridge:
 
 opencode:
   executable: auto
+  # Personal Inspector requires OpenCode V2.
   api_version: "2"
+  agent: inspector
+  startup_timeout: 30
+  # Optional; default false. Set true only when the selected model supports it.
+  model_thinking: false
   model: custom/replace-with-model
   model_config:
     providerId: custom
     modelId: replace-with-model
     baseUrl: "https://model.example/v1"
     apiKey: "replace-with-api-key"
-  startup_timeout: 30
