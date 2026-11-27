@@ -16,6 +16,12 @@
 - 浏览器自动登录、VPN、堡垒机、Chrome、Playwright；
 - 任务调度、Ansible、录制、受控变更。
 
+完整部署、验收、升级和故障排查见：
+
+```text
+docs/DEPLOYMENT.md
+```
+
 ## 安装
 
 需要 Python 3.11+、Node.js 24+、OpenCode CLI 和 SecureCRT。

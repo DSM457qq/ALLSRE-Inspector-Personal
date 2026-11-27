@@ -118,6 +118,14 @@ class LocalAgentRuntime:
                 return self.status()
             configured = str(self.settings.opencode.get("executable") or "opencode")
             executable = shutil.which(configured) or resolve_opencode_executable(configured)
+            # A project-local ``npm ci`` installs the CLI shim under
+            # node_modules/.bin without putting it on PATH.
+            if not executable:
+                for name in ("opencode.cmd", "opencode.exe", "opencode"):
+                    candidate = self.project_root / "node_modules" / ".bin" / name
+                    if candidate.is_file():
+                        executable = str(candidate)
+                        break
             if executable and Path(executable).suffix.lower() in {".cmd", ".ps1"}:
                 executable = resolve_opencode_executable(executable) or executable
             if not executable:
