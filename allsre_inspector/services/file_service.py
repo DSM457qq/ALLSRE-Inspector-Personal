@@ -25,11 +25,10 @@ def _safe_path(root: Path, rel_path: str) -> Path:
 
 
 class FileStorageService:
-    """Staging-area file exchange with the config-center.
+    """Personal file storage under the configured ``file_storage_dir``.
 
-    Files are addressed by a path relative to ``root`` (the worker desktop
-    ``ALLSRE-files`` folder by default). Transfer is streamed in fixed chunks
-    so large files never need to be buffered in memory.
+    Files are addressed by a path relative to ``root`` (``data/files`` by
+    default in the personal edition). Path escapes are rejected.
     """
 
     def __init__(self, root: Path) -> None:

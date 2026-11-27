@@ -7,7 +7,7 @@
 - `list_terminals`：列出当前已打开的 SecureCRT 终端。返回 `terminalId`、`name`、`ip`。
 - `bash`：在 Shell 提示符下执行普通 Shell 命令。
 - `sqlbash`：在 SQL> 等数据库提示符下原样发送 SQL，不添加 Shell 包装。
-- `save_task_file`：将报告保存到本机 `ALLSRE-files` 目录。
+- `save_task_file`：将报告保存到本机 `file_storage_dir` 目录（默认 `data/files`）。
 
 ## 规则
 

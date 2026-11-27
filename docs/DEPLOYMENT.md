@@ -162,7 +162,7 @@ opencode:
 | `listen_host` | 只能是 `127.0.0.1`、`localhost` 或 `::1` |
 | `listen_port` | Inspector HTTP 端口，默认 8876 |
 | `data_dir` | 审计库、OpenCode 运行时配置、Bridge 数据 |
-| `file_storage_dir` | `save_task_file` 的根目录 |
+| `file_storage_dir` | `save_task_file` 的根目录；默认 `./data/files`，不会自动使用桌面 |
 | `securecrt_bridge.enabled` | 是否启动本机 Bridge |
 | `securecrt_bridge.port` | Bridge 端口，默认 8765 |
 | `shell_keepalive_enabled` | 空闲 Shell 保活；示例默认开启 |
@@ -173,6 +173,24 @@ opencode:
 | `opencode.model` | `providerId/modelId` |
 | `opencode.model_config` | OpenAI-compatible 端点配置 |
 | `opencode.model_thinking` | 是否启用模型 thinking |
+
+### 5.3.1 文件保存路径
+
+默认保存到：
+
+```text
+C:\ALLSRE\ALLSRE-Inspector-Personal\data\files
+```
+
+不会自动创建桌面的 `ALLSRE-files` 文件夹。
+
+如需改到桌面：
+
+```yaml
+file_storage_dir: C:\Users\<用户名>\Desktop\ALLSRE-files
+```
+
+Inspector 启动时会创建该目录；`save_task_file` 只允许写入该根目录以下的相对路径。
 
 ### 5.4 模型配置注意事项
 
