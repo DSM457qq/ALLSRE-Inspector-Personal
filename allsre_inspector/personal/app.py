@@ -153,7 +153,12 @@ def create_app(settings: PersonalSettings) -> FastAPI:
             raise HTTPException(status_code=503, detail={
                 "code": "LOCAL_AGENT_START_FAILED", "message": str(exc)[:300],
             }) from exc
-        return RedirectResponse(state.agent.url, status_code=307)
+        try:
+            return RedirectResponse(state.agent.pair_url(), status_code=307)
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail={
+                "code": "LOCAL_AGENT_PAIR_FAILED", "message": str(exc)[:300],
+            }) from exc
 
     @app.get("/")
     def home():

@@ -10,6 +10,7 @@ import shutil
 import socket
 import subprocess
 import time
+import urllib.parse
 import urllib.request
 
 from ..core.executables import resolve_opencode_executable
@@ -153,6 +154,22 @@ class LocalAgentRuntime:
         request = urllib.request.Request(url, method=method, headers=self._api.headers())
         with urllib.request.urlopen(request, timeout=timeout) as response:
             return json.loads(response.read().decode("utf-8") or "{}")
+
+    def pair_url(self) -> str:
+        """Create a one-time browser pairing link for this server.
+
+        OpenCode V2's web UI requires a pairing session cookie.  The CLI
+        ``opencode pair`` talks to the background service, which is not this
+        standalone server, so ask this exact server's /api/pair endpoint.
+        """
+        if not self.running or not self.port:
+            raise RuntimeError("local_agent_not_running")
+        value = self._request("POST", "/api/pair", timeout=5)
+        code = str(value.get("code") or "")
+        if not code:
+            raise RuntimeError("local_agent_pair_failed")
+        return (f"http://127.0.0.1:{self.port}/auth/connect/"
+                f"{urllib.parse.quote(code, safe='')}")
 
     def status(self) -> dict[str, Any]:
         return {
