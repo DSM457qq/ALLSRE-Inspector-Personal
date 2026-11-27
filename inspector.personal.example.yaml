@@ -1,0 +1,21 @@
+listen_host: 127.0.0.1
+listen_port: 8876
+data_dir: data
+file_storage_dir: ./data/files
+
+# SecureCRT Bridge: Inspector owns the local bridge and SecureCRT tab script.
+securecrt_bridge:
+  enabled: true
+  host: 127.0.0.1
+  port: 8765
+
+opencode:
+  executable: auto
+  api_version: "2"
+  model: custom/replace-with-model
+  model_config:
+    providerId: custom
+    modelId: replace-with-model
+    baseUrl: "https://model.example/v1"
+    apiKey: "replace-with-api-key"
+  startup_timeout: 30

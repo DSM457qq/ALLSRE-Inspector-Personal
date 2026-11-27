@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+node_modules/
+inspector.yaml
+data/
+logs/
+*.db
+*.sqlite3
+*.db-shm
+*.db-wal
+securecrt-bridge/
+.ipc-v2/
+backup.json
