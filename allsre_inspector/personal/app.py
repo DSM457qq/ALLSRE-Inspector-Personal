@@ -30,7 +30,10 @@ class PersonalState:
         self.terminal_directory = PersonalTerminalDirectory(settings, self.terminals)
         self.files = FileStorageService(settings.file_storage_dir)
         self.audit = PersonalAuditStore(settings.data_dir / "personal.sqlite3")
-        self.tools = PersonalToolService(self.terminal_directory, self.files, self.audit)
+        self.tools = PersonalToolService(
+            self.terminal_directory, self.files, self.audit,
+            bash_classification_enabled=settings.bash_classification_enabled,
+        )
         self.agent = LocalAgentRuntime(settings, project_root)
 
     def start(self) -> None:
@@ -52,6 +55,7 @@ class PersonalState:
         return {
             "status": "ok" if bridge.get("available") or not bridge.get("enabled") else "degraded",
             "service": "allsre-inspector-personal",
+            "bashClassificationEnabled": self.tools.bash_classification_enabled,
             "securecrtBridge": bridge,
             "terminals": self.terminals.health(),
             "agent": self.agent.status(),
@@ -91,6 +95,13 @@ def create_app(settings: PersonalSettings) -> FastAPI:
     @app.post("/api/v1/tools/bash/classify")
     def classify_bash(body: dict[str, Any], request: Request,
                       _: None = Depends(_local_only)) -> dict[str, Any]:
+        if not state.tools.bash_classification_enabled:
+            return {
+                "classification": "READ_ONLY",
+                "reason": "classification_disabled",
+                "policyVersion": "disabled",
+                "segments": 1,
+            }
         return classify_bash_command(str(body.get("command") or ""))
 
     @app.post("/api/v1/tools/bash")

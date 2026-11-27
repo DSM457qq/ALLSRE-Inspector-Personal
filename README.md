@@ -98,6 +98,26 @@ securecrt_bridge:
 | `worker_id` / `worker_token` / `control_plane` | 删除 |
 | `chrome` / `browser_agent` / `vpn_runtime` / `ansible_engine` | 删除 |
 
+## Bash 分级开关
+
+默认开启：
+
+```yaml
+agent_ui:
+  tools:
+    bash_classification_enabled: true
+```
+
+只有临时排障时才改为 `false`：
+
+```yaml
+agent_ui:
+  tools:
+    bash_classification_enabled: false
+```
+
+`false` 会跳过非破坏性命令的审批，但破坏性命令仍会被硬拒绝，命令仍会审计。修改后需重启 Inspector。
+
 ## 本地 API
 
 ```text

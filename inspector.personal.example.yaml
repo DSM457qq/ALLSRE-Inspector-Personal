@@ -14,6 +14,13 @@ securecrt_bridge:
   shell_keepalive_enabled: true
   shell_keepalive_interval_seconds: 90
 
+agent_ui:
+  tools:
+    # Safety switch. Keep true in normal use. false is a temporary
+    # break-glass mode: destructive commands remain blocked and every
+    # command is still audited, but non-destructive commands skip approval.
+    bash_classification_enabled: true
+
 opencode:
   executable: auto
   # Personal Inspector requires OpenCode V2.

@@ -66,6 +66,14 @@ class PersonalSettings:
     def opencode(self) -> dict[str, Any]:
         return dict(self.raw.get("opencode") or {})
 
+    @property
+    def bash_classification_enabled(self) -> bool:
+        tools = dict((self.raw.get("agent_ui") or {}).get("tools") or {})
+        value = tools.get("bash_classification_enabled", True)
+        if isinstance(value, str):
+            return value.strip().lower() not in {"0", "false", "no", "off"}
+        return bool(value)
+
 
 def load_settings(path: str | Path | None = None) -> PersonalSettings:
     source = Path(path or os.getenv("ALLSRE_INSPECTOR_CONFIG", "inspector.yaml")).resolve()
